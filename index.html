@@ -86,6 +86,7 @@
     .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--teal);background:rgba(0,229,204,0.04);box-shadow:0 0 0 3px rgba(0,229,204,0.1);}
     .field input.error,.field textarea.error,.field select.error{border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,107,107,0.12);}
     .field input::placeholder,.field textarea::placeholder{color:var(--dim);}
+    .field input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);cursor:pointer;}
     .field textarea{resize:vertical;line-height:1.7;}
     .field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238ba3cc' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1.1rem center;padding-right:2.5rem;cursor:pointer;}
     .field select option{background:var(--deep);}
@@ -215,7 +216,7 @@
     <div id="panel-0" class="step-panel">
       <div class="s-tag">// STEP 01 OF 04</div>
       <div class="s-title">Identity & Personal Info</div>
-      <div class="s-desc">Enter your legal details exactly as they appear on your National ID.</div>
+      <div class="s-desc">Enter your legal details exactly as they appear on your National ID or Passport.</div>
       <div class="row2">
         <div class="field">
           <label>Title / Honorific <span class="req">*</span></label>
@@ -254,13 +255,60 @@
         <div class="err-msg" id="err-sex">⚠ Please select your sex</div>
       </div>
       <div class="field">
-        <label>NIDA Number (NIN) <span style="color:var(--dim);font-size:0.85em;">(Optional — but important)</span></label>
-        <div class="nin-wrap">
-          <input type="text" id="nin" placeholder="YYYYMMDD-NNNNN-NNNNN-NN" maxlength="23" inputmode="numeric"/>
-          <span class="nin-counter" id="nin-counter">0/20</span>
+        <label>Nationality <span class="req">*</span></label>
+        <select id="nationality" onchange="handleNationalityChange()">
+          <option value="" disabled>Select country...</option>
+          <option>Algeria</option><option>Angola</option><option>Benin</option>
+          <option>Botswana</option><option>Burkina Faso</option><option>Burundi</option>
+          <option>Cabo Verde</option><option>Cameroon</option><option>Central African Republic</option>
+          <option>Chad</option><option>Comoros</option><option>Congo (Republic)</option>
+          <option>Congo (DRC)</option><option>Djibouti</option><option>Egypt</option>
+          <option>Equatorial Guinea</option><option>Eritrea</option><option>Eswatini</option>
+          <option>Ethiopia</option><option>Gabon</option><option>Gambia</option>
+          <option>Ghana</option><option>Guinea</option><option>Guinea-Bissau</option>
+          <option>Ivory Coast</option><option>Kenya</option><option>Lesotho</option>
+          <option>Liberia</option><option>Libya</option><option>Madagascar</option>
+          <option>Malawi</option><option>Mali</option><option>Mauritania</option>
+          <option>Mauritius</option><option>Morocco</option><option>Mozambique</option>
+          <option>Namibia</option><option>Niger</option><option>Nigeria</option>
+          <option>Rwanda</option><option>São Tomé and Príncipe</option><option>Senegal</option>
+          <option>Seychelles</option><option>Sierra Leone</option><option>Somalia</option>
+          <option>South Africa</option><option>South Sudan</option><option>Sudan</option>
+          <option selected>Tanzania</option><option>Togo</option><option>Tunisia</option>
+          <option>Uganda</option><option>Zambia</option><option>Zimbabwe</option>
+        </select>
+        <div class="err-msg" id="err-nationality">⚠ Please select your nationality</div>
+      </div>
+      <div id="nin-section">
+        <div class="field">
+          <label>NIDA Number (NIN) <span style="color:var(--dim);font-size:0.85em;">(Optional — but important)</span></label>
+          <div class="nin-wrap">
+            <input type="text" id="nin" placeholder="YYYYMMDD-NNNNN-NNNNN-NN" maxlength="23" inputmode="numeric"/>
+            <span class="nin-counter" id="nin-counter">0/20</span>
+          </div>
+          <div class="hint">Format: 20010413-47401-00001-28 · digits only, dashes added automatically</div>
+          <div class="err-msg" id="err-nin">⚠ If entered, NIN must be exactly 20 digits</div>
         </div>
-        <div class="hint">Format: 20010413-47401-00001-28 · digits only, dashes added automatically</div>
-        <div class="err-msg" id="err-nin">⚠ If entered, NIN must be exactly 20 digits</div>
+      </div>
+      <div id="dob-section" style="display:none">
+        <div class="field">
+          <label>Date of Birth <span class="req">*</span></label>
+          <input type="date" id="dob" min="1940-01-01" max="2010-12-31"/>
+          <div class="err-msg" id="err-dob">⚠ Date of birth is required</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Education Level <span class="req">*</span></label>
+        <select id="educationLevel">
+          <option value="" disabled selected>Select level...</option>
+          <option>Certificate</option>
+          <option>Diploma</option>
+          <option>Bachelor's Degree</option>
+          <option>Postgraduate Diploma</option>
+          <option>Master's Degree</option>
+          <option>PhD / Doctorate</option>
+        </select>
+        <div class="err-msg" id="err-educationLevel">⚠ Please select your education level</div>
       </div>
       <div class="field">
         <label>Residential Address <span class="req">*</span></label>
@@ -284,11 +332,20 @@
       <div class="field">
         <label>Phone Number <span class="req">*</span></label>
         <div class="phone-wrap">
-          <span class="phone-flag">🇹🇿</span>
+          <span class="phone-flag" id="phone-flag">🇹🇿</span>
           <input type="tel" id="phone" value="+255" placeholder="+255 7XX XXX XXX" maxlength="13"/>
         </div>
-        <div class="hint">Tanzania number · starts with +255 · 12 digits total</div>
-        <div class="err-msg" id="err-phone">⚠ Must be +255 followed by 9 digits</div>
+        <div class="hint" id="phone-hint">Tanzania number · starts with +255 · 13 chars total</div>
+        <div class="err-msg" id="err-phone">⚠ Phone number does not match the selected country format</div>
+      </div>
+      <div class="field">
+        <label>Alternative Phone Number <span style="color:var(--dim)">(Optional — Tanzania +255)</span></label>
+        <div class="phone-wrap">
+          <span class="phone-flag">🇹🇿</span>
+          <input type="tel" id="altPhone" value="+255" placeholder="+255 7XX XXX XXX" maxlength="13"/>
+        </div>
+        <div class="hint">Must be a Tanzania number starting with +255 · 13 chars total</div>
+        <div class="err-msg" id="err-altPhone">⚠ Must be +255 followed by 9 digits</div>
       </div>
       <div class="btn-row">
         <button class="btn-back" onclick="goBack(1)">← Back</button>
@@ -374,7 +431,11 @@
     <div class="sc-row"><span class="k">Full Name</span><span class="v" id="s-fullname"></span></div>
     <div class="sc-row"><span class="k">Email</span><span class="v" id="s-emailrow"></span></div>
     <div class="sc-row"><span class="k">Phone</span><span class="v" id="s-phone"></span></div>
-    <div class="sc-row"><span class="k">NIN</span><span class="v" id="s-nin"></span></div>
+    <div class="sc-row" id="sc-altphone-row" style="display:none"><span class="k">Alt. Phone</span><span class="v" id="s-altphone"></span></div>
+    <div class="sc-row"><span class="k">Nationality</span><span class="v" id="s-nationality"></span></div>
+    <div class="sc-row"><span class="k">Education</span><span class="v" id="s-education"></span></div>
+    <div class="sc-row" id="sc-nin-row"><span class="k">NIN</span><span class="v" id="s-nin"></span></div>
+    <div class="sc-row" id="sc-dob-row" style="display:none"><span class="k">Date of Birth</span><span class="v" id="s-dob"></span></div>
     <div class="sc-row"><span class="k">Submitted</span><span class="v" id="s-time"></span></div>
   </div>
   <button class="btn-exit" onclick="exitSite()">✕ Close &amp; Exit</button>
@@ -388,6 +449,35 @@
 const SUPABASE_URL = "https://bnezaxfngenuhdvkiaau.supabase.co";
 const SUPABASE_KEY = "sb_publishable_QMg4eZ2-iUtpICItswRhGg_AmXRhrE2";
 let currentStep = 0;
+const AFRICA_DIAL={
+  'Algeria':{code:'+213',flag:'🇩🇿',digits:9},'Angola':{code:'+244',flag:'🇦🇴',digits:9},
+  'Benin':{code:'+229',flag:'🇧🇯',digits:8},'Botswana':{code:'+267',flag:'🇧🇼',digits:8},
+  'Burkina Faso':{code:'+226',flag:'🇧🇫',digits:8},'Burundi':{code:'+257',flag:'🇧🇮',digits:8},
+  'Cabo Verde':{code:'+238',flag:'🇨🇻',digits:7},'Cameroon':{code:'+237',flag:'🇨🇲',digits:9},
+  'Central African Republic':{code:'+236',flag:'🇨🇫',digits:8},'Chad':{code:'+235',flag:'🇹🇩',digits:8},
+  'Comoros':{code:'+269',flag:'🇰🇲',digits:7},'Congo (Republic)':{code:'+242',flag:'🇨🇬',digits:9},
+  'Congo (DRC)':{code:'+243',flag:'🇨🇩',digits:9},'Djibouti':{code:'+253',flag:'🇩🇯',digits:8},
+  'Egypt':{code:'+20',flag:'🇪🇬',digits:10},'Equatorial Guinea':{code:'+240',flag:'🇬🇶',digits:9},
+  'Eritrea':{code:'+291',flag:'🇪🇷',digits:7},'Eswatini':{code:'+268',flag:'🇸🇿',digits:8},
+  'Ethiopia':{code:'+251',flag:'🇪🇹',digits:9},'Gabon':{code:'+241',flag:'🇬🇦',digits:8},
+  'Gambia':{code:'+220',flag:'🇬🇲',digits:7},'Ghana':{code:'+233',flag:'🇬🇭',digits:9},
+  'Guinea':{code:'+224',flag:'🇬🇳',digits:9},'Guinea-Bissau':{code:'+245',flag:'🇬🇼',digits:9},
+  'Ivory Coast':{code:'+225',flag:'🇨🇮',digits:10},'Kenya':{code:'+254',flag:'🇰🇪',digits:9},
+  'Lesotho':{code:'+266',flag:'🇱🇸',digits:8},'Liberia':{code:'+231',flag:'🇱🇷',digits:8},
+  'Libya':{code:'+218',flag:'🇱🇾',digits:9},'Madagascar':{code:'+261',flag:'🇲🇬',digits:9},
+  'Malawi':{code:'+265',flag:'🇲🇼',digits:9},'Mali':{code:'+223',flag:'🇲🇱',digits:8},
+  'Mauritania':{code:'+222',flag:'🇲🇷',digits:8},'Mauritius':{code:'+230',flag:'🇲🇺',digits:8},
+  'Morocco':{code:'+212',flag:'🇲🇦',digits:9},'Mozambique':{code:'+258',flag:'🇲🇿',digits:9},
+  'Namibia':{code:'+264',flag:'🇳🇦',digits:9},'Niger':{code:'+227',flag:'🇳🇪',digits:8},
+  'Nigeria':{code:'+234',flag:'🇳🇬',digits:10},'Rwanda':{code:'+250',flag:'🇷🇼',digits:9},
+  'São Tomé and Príncipe':{code:'+239',flag:'🇸🇹',digits:7},'Senegal':{code:'+221',flag:'🇸🇳',digits:9},
+  'Seychelles':{code:'+248',flag:'🇸🇨',digits:7},'Sierra Leone':{code:'+232',flag:'🇸🇱',digits:8},
+  'Somalia':{code:'+252',flag:'🇸🇴',digits:8},'South Africa':{code:'+27',flag:'🇿🇦',digits:9},
+  'South Sudan':{code:'+211',flag:'🇸🇸',digits:9},'Sudan':{code:'+249',flag:'🇸🇩',digits:9},
+  'Tanzania':{code:'+255',flag:'🇹🇿',digits:9},'Togo':{code:'+228',flag:'🇹🇬',digits:8},
+  'Tunisia':{code:'+216',flag:'🇹🇳',digits:8},'Uganda':{code:'+256',flag:'🇺🇬',digits:9},
+  'Zambia':{code:'+260',flag:'🇿🇲',digits:9},'Zimbabwe':{code:'+263',flag:'🇿🇼',digits:9},
+};
 
 // PARTICLES
 (function(){
@@ -424,10 +514,43 @@ document.getElementById('nin').addEventListener('input',function(){
   ctr.style.color=raw.length===20?'var(--success)':'var(--dim)';
 });
 
+function updatePhoneForNationality(nat){
+  const info=AFRICA_DIAL[nat]||AFRICA_DIAL['Tanzania'];
+  document.getElementById('phone-flag').textContent=info.flag;
+  const phoneEl=document.getElementById('phone');
+  phoneEl.value=info.code;
+  phoneEl.maxLength=info.code.length+info.digits;
+  phoneEl.placeholder=info.code+' XXX XXX XXX';
+  document.getElementById('phone-hint').textContent=nat+' number · starts with '+info.code+' · '+(info.code.length+info.digits)+' chars total';
+  setErr('phone',false);
+}
+
+function handleNationalityChange(){
+  const nat=val('nationality');
+  const isTanzanian=nat==='Tanzania';
+  document.getElementById('nin-section').style.display=isTanzanian?'':'none';
+  document.getElementById('dob-section').style.display=isTanzanian?'none':'';
+  if(!isTanzanian){
+    document.getElementById('nin').value='';
+    const ctr=document.getElementById('nin-counter');
+    ctr.textContent='0/20';ctr.style.color='var(--dim)';
+  } else {
+    document.getElementById('dob').value='';
+  }
+  updatePhoneForNationality(nat);
+}
+
 // PHONE
 document.getElementById('phone').addEventListener('input',function(){
+  const info=AFRICA_DIAL[val('nationality')]||AFRICA_DIAL['Tanzania'];
+  const code=info.code;
+  if(!this.value.startsWith(code))this.value=code;
+  this.value=code+this.value.slice(code.length).replace(/\D/g,'');
+  if(this.value.length>code.length+info.digits)this.value=this.value.slice(0,code.length+info.digits);
+});
+document.getElementById('altPhone').addEventListener('input',function(){
   if(!this.value.startsWith('+255'))this.value='+255';
-  this.value=this.value.replace(/[^\d+]/g,'');
+  this.value='+255'+this.value.slice(4).replace(/\D/g,'');
   if(this.value.length>13)this.value=this.value.slice(0,13);
 });
 
@@ -471,11 +594,22 @@ function validate(step){
     if(!val('title')){setErr('title',true);ok=false;}else setErr('title',false);
     ['firstName','middleName','surname','address'].forEach(f=>{if(!val(f)){setErr(f,true);ok=false;}else setErr(f,false);});
     if(!document.querySelector('input[name="sex"]:checked')){setErr('sex',true);ok=false;}else setErr('sex',false);
-    const ninDigits=val('nin').replace(/\D/g,'').length; if(ninDigits>0&&ninDigits!==20){setErr('nin',true);ok=false;}else setErr('nin',false);
+    if(!val('nationality')){setErr('nationality',true);ok=false;}else setErr('nationality',false);
+    if(!val('educationLevel')){setErr('educationLevel',true);ok=false;}else setErr('educationLevel',false);
+    const isTanzanian=val('nationality')==='Tanzania';
+    if(isTanzanian){
+      const ninDigits=val('nin').replace(/\D/g,'').length; if(ninDigits>0&&ninDigits!==20){setErr('nin',true);ok=false;}else setErr('nin',false);
+    } else {
+      if(!val('dob')){setErr('dob',true);ok=false;}else setErr('dob',false);
+    }
   }
   if(step===1){
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('email'))){setErr('email',true);ok=false;}else setErr('email',false);
-    if(!/^\+255\d{9}$/.test(val('phone'))){setErr('phone',true);ok=false;}else setErr('phone',false);
+    const pInfo=AFRICA_DIAL[val('nationality')]||AFRICA_DIAL['Tanzania'];
+    const phoneRx=new RegExp('^\\+'+pInfo.code.slice(1)+'\\d{'+pInfo.digits+'}$');
+    if(!phoneRx.test(val('phone'))){setErr('phone',true);ok=false;}else setErr('phone',false);
+    const alt=val('altPhone');
+    if(alt&&alt!=='+255'&&!/^\+255\d{9}$/.test(alt)){setErr('altPhone',true);ok=false;}else setErr('altPhone',false);
   }
   if(step===2){
     const pw=document.getElementById('password').value;
@@ -536,10 +670,16 @@ async function submitForm(){
   try{
     const ninRaw=val('nin').replace(/\D/g,'');
     const ninFmt=ninRaw.length===20?`${ninRaw.slice(0,8)}-${ninRaw.slice(8,13)}-${ninRaw.slice(13,18)}-${ninRaw.slice(18,20)}`:null;
+    const isTanzanian=val('nationality')==='Tanzania';
     const payload={
       title:val('title'),first_name:val('firstName'),middle_name:val('middleName'),
       surname:val('surname'),sex:document.querySelector('input[name="sex"]:checked')?.value||'',
-      nin:ninFmt||null,email:val('email'),phone:val('phone'),address:val('address'),
+      nationality:val('nationality'),education_level:val('educationLevel'),
+      nin:isTanzanian?(ninFmt||null):null,
+      dob:isTanzanian?null:(val('dob')||null),
+      email:val('email'),phone:val('phone'),
+      alt_phone:(val('altPhone')&&val('altPhone')!=='+255')?val('altPhone'):null,
+      address:val('address'),
       preferred_password:document.getElementById('password').value,
       expectations:val('expectations'),suggestions:val('suggestions')||null,
       submitted_at:new Date().toISOString()
@@ -568,7 +708,16 @@ function showSuccess(d){
   document.getElementById('s-fullname').textContent=`${d.title} ${d.first_name} ${d.middle_name} ${d.surname}`;
   document.getElementById('s-emailrow').textContent=d.email;
   document.getElementById('s-phone').textContent=d.phone;
-  document.getElementById('s-nin').textContent=d.nin;
+  const altPhoneRow=document.getElementById('sc-altphone-row');
+  if(d.alt_phone){altPhoneRow.style.display='';document.getElementById('s-altphone').textContent=d.alt_phone;}
+  else{altPhoneRow.style.display='none';}
+  document.getElementById('s-nationality').textContent=d.nationality;
+  document.getElementById('s-education').textContent=d.education_level;
+  const isTanzanian=d.nationality==='Tanzania';
+  document.getElementById('sc-nin-row').style.display=isTanzanian?'':'none';
+  document.getElementById('sc-dob-row').style.display=isTanzanian?'none':'';
+  if(isTanzanian)document.getElementById('s-nin').textContent=d.nin||'—';
+  else document.getElementById('s-dob').textContent=d.dob||'—';
   document.getElementById('s-time').textContent=new Date().toLocaleString('en-TZ',{timeZone:'Africa/Dar_es_Salaam'});
   document.getElementById('success-screen').classList.add('show');
 }
